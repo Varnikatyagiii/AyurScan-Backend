@@ -6,6 +6,8 @@ from tensorflow.keras.applications.efficientnet import preprocess_input
 from PIL import Image
 import io
 import json
+import os
+from huggingface_hub import hf_hub_download
 
 app = FastAPI(title="AyurScan API")
 
@@ -16,7 +18,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = tf.keras.models.load_model('ayurscan_81percent_BEST.h5')
+# Load model from Hugging Face
+print("Downloading model from Hugging Face...")
+model_path = hf_hub_download(
+    repo_id="varnikatyagiii/AyurScan-Backend",
+    filename="ayurscan_81percent_BEST.h5",
+    token=os.environ.get("HF_TOKEN")
+)
+model = tf.keras.models.load_model(model_path)
 print("Model loaded!")
 
 with open('merged_database.json', 'r') as f:
